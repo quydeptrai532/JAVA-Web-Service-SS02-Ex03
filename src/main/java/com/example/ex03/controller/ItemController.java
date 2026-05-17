@@ -24,11 +24,8 @@ public class ItemController {
                 .filter(i -> i.getId().equals(id))
                 .findFirst();
 
-        if (item.isPresent()) {
-            return new ResponseEntity<>(item.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
-        }
+        return item.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND)); // Trả về 404 nếu không thấy
     }
 
     // POST: Tạo mới Item
@@ -36,7 +33,7 @@ public class ItemController {
     public ResponseEntity<Item> createItem(@RequestBody Item item) {
         item.setId(nextId.getAndIncrement());
         items.add(item);
-        return new ResponseEntity<>(item, HttpStatus.CREATED); // 201 Created
+        return new ResponseEntity<>(item, HttpStatus.CREATED); // Trả về 201 Created
     }
 
     // PUT: Cập nhật Item
@@ -51,9 +48,9 @@ public class ItemController {
             itemToUpdate.setName(itemDetails.getName());
             itemToUpdate.setQuantity(itemDetails.getQuantity());
             itemToUpdate.setPrice(itemDetails.getPrice());
-            return new ResponseEntity<>(itemToUpdate, HttpStatus.OK); // 200 OK
+            return new ResponseEntity<>(itemToUpdate, HttpStatus.OK); // Trả về 200 OK
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Trả về 404 nếu không thấy ID
         }
     }
 
@@ -63,9 +60,9 @@ public class ItemController {
         boolean isRemoved = items.removeIf(i -> i.getId().equals(id));
 
         if (isRemoved) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Trả về 204 No Content
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 Not Found
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Trả về 404 nếu không thấy ID
         }
     }
 }
